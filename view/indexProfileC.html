@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVC Profile Cards</title>
+  <link rel="stylesheet" href="profileC.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  
+  <section class="main">
+    <div id="card-container" class="card-list"></div>
+  </section>
+  <script">
+    // script.js
+
+// --- 1. MODEL (The Data) ---
+// This acts as your database. You can push new users here when they register.
+const userModel = {
+  users: [
+    {
+      id: 1,
+      name: "Olivia Gomez",
+      role: "Developer & Designer",
+      img: "profile.jpg", // Replace with actual image path
+      stats: { following: 120, followers: 5000, posts: 209 }
+    },
+    // You can add more users easily here
+    {
+      id: 2,
+      name: "John Doe",
+      role: "Backend Engineer",
+      img: "profile.jpg", 
+      stats: { following: 40, followers: 1200, posts: 45 }
+    }
+  ],
+
+  // Method to add a new user (Simulating registration)
+  registerUser: function(newUser) {
+    this.users.push(newUser);
+    controller.refresh(); // Tell controller to update view
+  }
+};
+
+// --- 2. VIEW (The Interface) ---
+const userView = {
+  container: document.getElementById('card-container'),
+
+  // Generates HTML for a single card
+  createCardHTML: function(user) {
+    return `
+      <div class="image">
+        <img src="${user.img}" alt="${user.name}" class="profile-pic">
+      </div>
+      <div class="data">
+        <h2>${user.name}</h2>
+        <span>${user.role}</span>
+      </div>
+      
+      <div class="row">
+        <div class="info">
+          <h3>Following</h3><span>${user.stats.following}</span>
+        </div>
+        <div class="info">
+          <h3>Followers</h3><span>${user.stats.followers}</span>
+        </div>
+        <div class="info">
+          <h3>Posts</h3><span>${user.stats.posts}</span>
+        </div>
+      </div>
+      <div class="buttons">
+        <a href="#" class="btn">Message</a>
+        <a href="#" class="btn">Follow Me</a>
+      </div>
+    `;
+  },
+
+  render: function(users) {
+    this.container.innerHTML = ''; 
+    
+    users.forEach(user => {
+      const card = document.createElement('div');
+      card.className = 'profile-card';
+      card.innerHTML = this.createCardHTML(user);
+      
+      // Add Click Event to THIS specific card
+      card.addEventListener('click', () => {
+        // Optional: Close other cards when one opens
+        document.querySelectorAll('.profile-card').forEach(c => {
+           if(c !== card) c.classList.remove('active');
+        });
+        
+        // Toggle the clicked card
+        card.classList.toggle('active');
+      });
+
+      this.container.appendChild(card);
+    });
+  }
+};
+
+const controller = {
+  init: function() {
+    userView.render(userModel.users);
+  },
+
+  refresh: function() {
+    userView.render(userModel.users);
+  },
+  
+
+  addNewUser: function(name, role, img) {
+      const newUser = {
+          id: Date.now(),
+          name: name, 
+          role: role, 
+          img: img,
+          stats: { following: 0, followers: 0, posts: 0 }
+      };
+      userModel.registerUser(newUser);
+  }
+};
+
+controller.init();
+  </script>
+</body>
+</html>
